@@ -60,7 +60,7 @@
 				<dict>
 					<key>COMMAND_STRING</key>
 					<string>  result=$(codeowner "$1" 2&gt;&amp;1)
-  button=$(osascript -e "display dialog \"${result}\" with title \"Codeowners\"" 2&gt;&amp;1)</string>
+  osascript -e "display dialog \"${result}\" with title \"Codeowners\" buttons {\"OK\"} default button \"OK\"" 2&gt;&amp;1</string>
 					<key>CheckedForUserDefaultShell</key>
 					<true/>
 					<key>inputMethod</key>
