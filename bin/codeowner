@@ -7,33 +7,12 @@ usage() {
   exit 1
 }
 
-# Find the git repo root for a given path.
-# Walks up from the path to find an existing directory (the file itself may not exist).
 find_repo_root() {
-  local path="$1"
-  local dir
-  [[ -d "${path}" ]] && dir="${path}" || dir="$(dirname "${path}")"
+  local dir="$1"
+  until [[ -d "${dir}" || "${dir}" == "/" ]]; do
+    dir="$(dirname "${dir}")"
+  done
   git -C "${dir}" rev-parse --show-toplevel 2>/dev/null
-}
-
-normalize_path() {
-  local path="${1#./}"
-  path="${path%/}"
-  local repo_root="$2"
-
-  # Resolve to repo-root-relative path so the script works from any directory.
-  local abs_path
-  if [[ "${path}" == /* ]]; then
-    abs_path="${path}"
-  else
-    abs_path="${PWD}/${path}"
-  fi
-
-  if [[ -n "${repo_root}" && "${abs_path}" == "${repo_root}/"* ]]; then
-    echo "${abs_path#"${repo_root}/"}"
-  else
-    echo "${path}"
-  fi
 }
 
 find_owner() {
@@ -73,14 +52,9 @@ main() {
     usage
   fi
 
-  # Resolve the argument to an absolute path for repo-root detection.
   local raw="${1#./}"; raw="${raw%/}"
   local abs_path
-  if [[ "${raw}" == /* ]]; then
-    abs_path="${raw}"
-  else
-    abs_path="${PWD}/${raw}"
-  fi
+  [[ "${raw}" == /* ]] && abs_path="${raw}" || abs_path="${PWD}/${raw}"
 
   local repo_root
   repo_root="$(find_repo_root "${abs_path}")" || true
@@ -91,9 +65,7 @@ main() {
   fi
 
   local codeowners_file="${CODEOWNERS_FILE:-${repo_root}/CODEOWNERS_HH}"
-
-  local filepath
-  filepath="$(normalize_path "${raw}" "${repo_root}")"
+  local filepath="${abs_path#"${repo_root}/"}"
 
   local matched_line
   matched_line="$(find_owner "${filepath}" "${codeowners_file}")"
