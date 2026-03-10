@@ -3,7 +3,14 @@
 set -euo pipefail
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly CODEOWNERS_FILE="${CODEOWNERS_FILE:-${SCRIPT_DIR}/../../CODEOWNERS_HH}"
+
+find_repo_root() {
+  git rev-parse --show-toplevel 2>/dev/null
+}
+
+_repo_root="$(find_repo_root)"
+readonly CODEOWNERS_FILE="${CODEOWNERS_FILE:-${_repo_root}/CODEOWNERS_HH}"
+unset _repo_root
 
 usage() {
   echo "Usage: codeowner <path>" >&2
@@ -23,7 +30,7 @@ normalize_path() {
   fi
 
   local repo_root
-  repo_root="$(git -C "${SCRIPT_DIR}" rev-parse --show-toplevel 2>/dev/null)" || true
+  repo_root="$(find_repo_root)" || true
 
   if [[ -n "${repo_root}" && "${abs_path}" == "${repo_root}/"* ]]; then
     echo "${abs_path#"${repo_root}/"}"
