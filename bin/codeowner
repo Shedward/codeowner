@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly CODEOWNERS_FILE="${CODEOWNERS_FILE:-${SCRIPT_DIR}/../../CODEOWNERS_HH}"
+
+usage() {
+  echo "Usage: codeowner <path>" >&2
+  exit 1
+}
+
+normalize_path() {
+  local path="${1#./}"
+  path="${path%/}"
+
+  # Resolve to repo-root-relative path so the script works from any directory.
+  local abs_path
+  if [[ "${path}" == /* ]]; then
+    abs_path="${path}"
+  else
+    abs_path="${PWD}/${path}"
+  fi
+
+  local repo_root
+  repo_root="$(git -C "${SCRIPT_DIR}" rev-parse --show-toplevel 2>/dev/null)" || true
+
+  if [[ -n "${repo_root}" && "${abs_path}" == "${repo_root}/"* ]]; then
+    echo "${abs_path#"${repo_root}/"}"
+  else
+    echo "${path}"
+  fi
+}
+
+find_owner() {
+  local filepath="$1"
+  local matched=""
+
+  while IFS= read -r line; do
+    [[ "${line}" =~ ^# || -z "${line}" ]] && continue
+
+    local pattern="${line%% *}"
+    if [[ "${filepath}" =~ ^${pattern}$ || "${filepath}/" =~ ^${pattern}$ || "${filepath}" =~ ^${pattern}/ ]]; then
+      matched="${line}"
+    fi
+  done < "${CODEOWNERS_FILE}"
+
+  echo "${matched}"
+}
+
+format_result() {
+  local line="$1"
+  local team=""
+  local func=""
+
+  [[ "${line}" =~ @hhru/([^[:space:]]+) ]] && team="${BASH_REMATCH[1]}"
+  [[ "${line}" =~ hh-func:[[:space:]]*([^[:space:]]+) ]] && func="${BASH_REMATCH[1]%,}"
+
+  if [[ -n "${func}" ]]; then
+    echo "${team} (${func})"
+  else
+    echo "${team}"
+  fi
+}
+
+main() {
+  if [[ $# -ne 1 ]]; then
+    usage
+  fi
+
+  local filepath
+  filepath="$(normalize_path "$1")"
+
+  local matched_line
+  matched_line="$(find_owner "${filepath}")"
+
+  if [[ -z "${matched_line}" ]]; then
+    echo "No owner found for: ${filepath}" >&2
+    exit 1
+  fi
+
+  format_result "${matched_line}"
+}
+
+main "$@"
