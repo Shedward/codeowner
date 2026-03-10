@@ -7,7 +7,7 @@ SOURCE_SERVICE_PATH=Services/codeowner.workflow
 PREFIX?=/usr/local
 BIN_PATH=$(PREFIX)/bin
 DEST_SCRIPT_PATH=$(BIN_PATH)/$(PRODUCT_NAME)
-DEST_SERVICE_PATH=$(HOME)/Library/Workflows/$(PRODUCT_NAME).workflow
+DEST_SERVICE_PATH=$(HOME)/Library/Services/$(PRODUCT_NAME).workflow
 
 .PHONY: version install uninstall
 
