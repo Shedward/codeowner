@@ -1,5 +1,5 @@
 PRODUCT_NAME=codeowner
-PRODUCT_VERSION=1.0.3
+PRODUCT_VERSION=1.0.5
 
 SOURCE_SCRIPT_PATH=bin/codeowner
 SOURCE_SERVICE_PATH=Services/codeowner.workflow
