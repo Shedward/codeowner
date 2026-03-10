@@ -1,13 +1,14 @@
 PRODUCT_NAME=codeowner
-PRODUCT_VERSION=1.0.1
+PRODUCT_VERSION=1.0.3
 
 SOURCE_SCRIPT_PATH=bin/codeowner
 SOURCE_SERVICE_PATH=Services/codeowner.workflow
 
 PREFIX?=/usr/local
 BIN_PATH=$(PREFIX)/bin
+SERVICES_PATH=$(HOME)/Library/Services
 DEST_SCRIPT_PATH=$(BIN_PATH)/$(PRODUCT_NAME)
-DEST_SERVICE_PATH=$(HOME)/Library/Services/$(PRODUCT_NAME).workflow
+DEST_SERVICE_PATH=$(SERVICES_PATH)/$(PRODUCT_NAME).workflow
 
 .PHONY: version install uninstall
 
@@ -16,7 +17,7 @@ version:
 
 install:
 	mkdir -p $(BIN_PATH)
-	mkdir -p $(HOME)/Library/Workflows
+	mkdir -p $(SERVICES_PATH)
 	cp -f $(SOURCE_SCRIPT_PATH) $(DEST_SCRIPT_PATH)
 	cp -rf $(SOURCE_SERVICE_PATH) $(DEST_SERVICE_PATH)
 	chmod +x $(DEST_SCRIPT_PATH)
