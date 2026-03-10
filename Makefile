@@ -6,7 +6,7 @@ SOURCE_SERVICE_PATH=Services/codeowner.workflow
 
 PREFIX?=/usr/local
 BIN_PATH=$(PREFIX)/bin
-SERVICES_PATH=$(HOME)/Library/Services
+SERVICES_PATH?=$(HOME)/Library/Services
 DEST_SCRIPT_PATH=$(BIN_PATH)/$(PRODUCT_NAME)
 DEST_SERVICE_PATH=$(SERVICES_PATH)/$(PRODUCT_NAME).workflow
 
