@@ -35,6 +35,20 @@ Output is `<team> (<func>)`, or just `<team>` if no `hh-func:` tag is present.
 
 ## Installation
 
+
+### Brew
+
+```bash
+brew install hhru/tap/Codeowner
+```
+
+Also to install Quick Action
+```
+ln -sf /opt/homebrew/opt/codeowner/share/codeowner/codeowner.workflow ~/Library/Services/
+```
+
+### Manual
+
 ```bash
 make install
 ```
